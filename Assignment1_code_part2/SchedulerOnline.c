@@ -113,14 +113,35 @@ interrupt (TIMERA0_VECTOR) TimerIntrpt (void)
   /* When should the next timer interrupt occur? Note: we only want interrupts at job releases */
 
   /* Super simple, single task example */
-  Taskp t = &Tasks[0];
-  t->NextRelease += t->Period; // set next release time
-  t->Activated++;
-  NextInterruptTime = t->NextRelease;
+  // Taskp t = &Tasks[0];
+  // t->NextRelease += t->Period; // set next release time
+  // t->Activated++;
+  // NextInterruptTime = t->NextRelease;
   /* End of example*/
 
+  // Own code:
+  uint8_t i; 
+  for(i = 0; i < NUMTASKS; i++)
+  {
+    Taskp t = &Tasks[i];
+    if (t->NextRelease == TAR) { // Check if the task has a deadline at the current time
+      t->NextRelease += t->Period; // Set next release time
+      t->Activated++;
+    }
+
+    if(TACCR0 == NextInterruptTime)
+    {
+      NextInterruptTime = t->NextRelease; // If TACCR0 is equal to current time (NextInterruptTime not reset yet), set it to this release time.
+    }
+    else
+    {
+      DetermineNextInterruptTime(t->NextRelease); // Else choose minimum release time.
+    }
+    
+  }
+
   /* ---------------------------------------------------------------- */
- 
+
 
   TACCR0 = NextInterruptTime;
 
