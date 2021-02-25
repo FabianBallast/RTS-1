@@ -7,6 +7,10 @@ static void ExecuteTask (Taskp t)
 
   t->Invoked++;
   t->Taskf(t->ExecutionTime); // execute task
+  // t->Flags = 0;
+
+  //Own code:
+  
   // Check scheduler after done? Done automatically?
 
   /* ---------------------------------------------------------------- */
@@ -24,15 +28,29 @@ void Scheduler_P_FP (Task Tasks[])
   //   ExecuteTask(t);
   // }
   /* End of example*/
+ 
+
+  // First, find task t in Tasks[] that 
+  //  a) is triggered
+  //  b) has shortest period
+
+  // Second, ExecuteTask(t) 
+
+  // Third: call Scheduler_P_FP() with Tasks[]. 
+
+
   uint8_t i;
+  // for(i = NUMTASKS-1; i >= 0; i--)
   for(i = 0; i < NUMTASKS; i++)
   {
-    Taskp t = &Tasks[i];
+    Taskp t = &Tasks[NUMTASKS - 1 - i];
 
     if (t->Activated != t->Invoked)
     {
+      _EINT(); 
       ExecuteTask(t);
-      // break; Is it blocking untill done? Do we break? No clue yet. We need to schedule highest priority task.
+      _DINT(); 
+      // break; //Is it blocking untill done? Do we break? No clue yet. We need to schedule highest priority task.
     }
   }
 

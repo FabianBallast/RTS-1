@@ -18,13 +18,24 @@
 void InitLeds (uint8_t Colors)
 {
   LEDDIR |= Colors;
+
+  // Default:
   LEDPIN = 0;
+
+  // New: 
+  // LEDPIN |= Colors;
 }
 
 void SetLeds (uint8_t Colors, uint8_t On)
 {
+  // Default:
   if (On) LEDPIN |= Colors;
   else    LEDPIN &= ~Colors;
+
+  // New:
+  // if (On) LEDPIN &= ~Colors;
+  // else    LEDPIN |= Colors;
+  
 }
 
 void ToggleLeds (uint8_t Colors)

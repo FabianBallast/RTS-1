@@ -124,12 +124,26 @@ interrupt (TIMERA0_VECTOR) TimerIntrpt (void)
   for(i = 0; i < NUMTASKS; i++)
   {
     Taskp t = &Tasks[i];
-    if (t->NextRelease == TAR) { // Check if the task has a deadline at the current time
+
+    // First step: update all NextRelease times
+    if (t->NextRelease == TACCR0 || t->Activated == 0) { // Check if the task has a deadline at the current time
       t->NextRelease += t->Period; // Set next release time
-      t->Activated++;
+      t->Activated++; 
+      // NextInterruptTime = t->NextRelease;
+      // t->Flags |= TRIGGERED; 
     }
 
-    if(TACCR0 == NextInterruptTime)
+    /*
+    3 tasks: Yellow (1000), green (500), red (250)
+
+    1st NextIntruptTime -> 250
+
+    2nd: min(NextInterruptTime, 500, 500, 1000)
+
+
+    */
+
+    if(NextInterruptTime == TACCR0)
     {
       NextInterruptTime = t->NextRelease; // If TACCR0 is equal to current time (NextInterruptTime not reset yet), set it to this release time.
     }
@@ -138,7 +152,11 @@ interrupt (TIMERA0_VECTOR) TimerIntrpt (void)
       DetermineNextInterruptTime(t->NextRelease); // Else choose minimum release time.
     }
     
+  
   }
+
+    P3OUT = NextInterruptTime % 256;
+    P4OUT = NextInterruptTime / 256;
 
   /* ---------------------------------------------------------------- */
 

@@ -58,10 +58,10 @@ int main(void)
   WDTCTL = WDTPW + WDTHOLD;       // Stop watchdog timer 
   
   InitClock ();
-
+  // InitTasks(); // Added?
   InitLeds (RED | GREEN | YELLOW | WHITE | BROWN | PURPLE);
 
-#define Tst1
+#define Tst2
 
 #ifdef Tst1
   // note: there 1024 ticks in second
