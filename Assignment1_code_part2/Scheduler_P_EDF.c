@@ -9,7 +9,21 @@ static void ExecuteTask (Taskp t)
 }
 
 void Scheduler_P_EDF (Task Tasks[])
-{ 
+{
+  unsigned int PrioList[NUMTASKS];
+  Taskp ClosestTask;
+
+  for (int i = 0; i < NUMTASKS; i++)
+  {
+    Taskp t = &Tasks[i];
+    if ((i == 0) || (t->NextRelease < ClosestTask->NextRelease))
+    {
+      ClosestTask = t; 
+    }
+    
+    
+  }
+   
   /* insert code */
   /* Use ExecuteTask function to execute a task */
   /* insert code */

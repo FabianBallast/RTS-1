@@ -61,7 +61,7 @@ int main(void)
   // InitTasks(); // Added?
   InitLeds (RED | GREEN | YELLOW | WHITE | BROWN | PURPLE);
 
-#define Tst2
+#define Tst1
 
 #ifdef Tst1
   // note: there 1024 ticks in second
