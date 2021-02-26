@@ -5,6 +5,7 @@
 #include "Scheduler.h"
 #include "Led.h"
 #include "Context.h"
+// #include "TimeTracking.c"
 
 Task Tasks[NUMTASKS];           /* Lower indices: lower priorities           */
 uint16_t NextInterruptTime;     /* Timestamp at which next interrupt should occur */
@@ -105,6 +106,7 @@ static void DetermineNextInterruptTime (CandidateValue)
 
 interrupt (TIMERA0_VECTOR) TimerIntrpt (void)
 {
+  StartTracking(0);
   ContextSwitch();
 
   /* ----------------------- INSERT CODE HERE ----------------------- */
@@ -129,6 +131,7 @@ interrupt (TIMERA0_VECTOR) TimerIntrpt (void)
     if (t->NextRelease == TACCR0 || t->Activated == 0) { // Check if the task has a deadline at the current time
       t->NextRelease += t->Period; // Set next release time
       t->Activated++; 
+      t->Flags |= TRIGGERED;
       // NextInterruptTime = t->NextRelease;
       // t->Flags |= TRIGGERED; 
     }
@@ -162,10 +165,15 @@ interrupt (TIMERA0_VECTOR) TimerIntrpt (void)
 
 
   TACCR0 = NextInterruptTime;
+  StopTracking(0);
+  PrintResults();
 
   CALL_SCHEDULER;
 
+  StartTracking(0);
   ResumeContext();
+  StopTracking(0);
+  PrintResults();
 }
 
 #endif
