@@ -24,7 +24,7 @@ void Scheduler_P_EDF (Task Tasks[])
   for (i = 0; i < NUMTASKS; i++)
   {
     Taskp t = &Tasks[i];
-    if ((!taskSet || t->NextRelease < closestTask->NextRelease) && t->Flags != 0)
+    if ((!taskSet || t->NextPendingDeadline < closestTask->NextPendingDeadline) && t->Flags != 0)
     {
       closestTask = t; 
       taskSet = true;
@@ -46,7 +46,4 @@ void Scheduler_P_EDF (Task Tasks[])
     PrintResults();
     Scheduler_P_EDF(Tasks);
   }
-  /* insert code */
-  /* Use ExecuteTask function to execute a task */
-  /* insert code */
 }

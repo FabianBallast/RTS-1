@@ -50,7 +50,7 @@ uint8_t RegisterTask (uint16_t Phasing, uint16_t Period, uint16_t ExecutionTime,
                       void (*TaskFunc) (uint16_t), uint8_t Prio, uint8_t Flags);
 uint8_t UnRegisterTask (uint8_t Prio);
 
-#define P_EDF
+#define P_FP
 
 #if defined (P_FP)
 #define CALL_SCHEDULER Scheduler_P_FP(Tasks);

@@ -1,16 +1,14 @@
 #include "Scheduler.h"
 #include "Led.h"
+#include <stdbool.h>
 
 static void ExecuteTask (Taskp t)
 {
   /* ----------------------- INSERT CODE HERE ----------------------- */
 
-  t->Invoked++;
+  t->Flags |= ACTIVE;
   t->Taskf(t->ExecutionTime); // execute task
-  // t->Flags = 0;
-
-  //Own code:
-  
+  t->Flags = 0;
   // Check scheduler after done? Done automatically?
 
   /* ---------------------------------------------------------------- */
@@ -21,37 +19,37 @@ void Scheduler_P_FP (Task Tasks[])
 { 
   /* ----------------------- INSERT CODE HERE ----------------------- */
 
-  /* Super simple, single task example */
-  // Taskp t = &Tasks[0];
-  // if (t->Activated != t->Invoked)
-  // {
-  //   ExecuteTask(t);
-  // }
-  /* End of example*/
- 
-
-  // First, find task t in Tasks[] that 
-  //  a) is triggered
-  //  b) has shortest period
-
-  // Second, ExecuteTask(t) 
-
-  // Third: call Scheduler_P_FP() with Tasks[]. 
-
-
+  StartTracking(1);
+  bool taskSet = false;
+  Taskp closestTask;
+  
   uint8_t i;
-  // for(i = NUMTASKS-1; i >= 0; i--)
-  for(i = 0; i < NUMTASKS; i++)
+  for (i = 0; i < NUMTASKS; i++)
   {
-    Taskp t = &Tasks[NUMTASKS - 1 - i];
-
-    if (t->Activated != t->Invoked)
+    Taskp t = &Tasks[i];
+    if ((!taskSet || t->Period < closestTask->Period) && t->Flags != 0)
     {
-      _EINT(); 
-      ExecuteTask(t);
-      _DINT(); 
-      // break; //Is it blocking untill done? Do we break? No clue yet. We need to schedule highest priority task.
-    }
+      closestTask = t; 
+      taskSet = true;
+    }   
+  }
+
+  if(taskSet && !(closestTask->Flags & ACTIVE))
+  {
+    taskSet = false;
+    _EINT(); 
+    StopTracking(1);
+    AddJobExecution();
+    PrintResults();
+
+    ExecuteTask(closestTask);
+    
+
+    StartTracking(1);
+    _DINT(); 
+    StopTracking(1);
+    PrintResults();
+    Scheduler_P_FP(Tasks);
   }
 
   /* ---------------------------------------------------------------- */
